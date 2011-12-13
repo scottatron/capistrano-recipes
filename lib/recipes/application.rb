@@ -57,7 +57,7 @@ Capistrano::Configuration.instance.load do
   set :monitorer, 'bluepill' unless exists?(:monitorer)
   
   # Application settings  
-  set :shared_dirs, %w(config uploads backup bundle tmp log) unless exists?(:shared_dirs)
+  set :shared_dirs, %w(config uploads backup bundle tmp log pids) unless exists?(:shared_dirs)
   
   namespace :app do
     task :setup, :roles => :app do
