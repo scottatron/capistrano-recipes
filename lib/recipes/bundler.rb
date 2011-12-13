@@ -9,6 +9,11 @@ Capistrano::Configuration.instance.load do
     task :install, :roles => :app, :except => { :no_release => true } do
       run "cd #{current_path} && bundle install #{bundle_flags}"
     end
+
+    desc "|capistrano-recipes| Runs rake assets:precompile app server (internal task)"
+    task :compile, :roles => :app, :except => { :no_release => true } do
+      run "cd #{current_path} && bundle exec rake assets:precompile RAILS_ENV=#{rails_env}"
+    end
   end
 end
 
