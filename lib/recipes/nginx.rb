@@ -21,7 +21,7 @@ Capistrano::Configuration.instance.load do
   namespace :nginx do
     desc "|capistrano-recipes| Parses and uploads nginx configuration for this app."
     task :setup, :roles => :app , :except => { :no_release => true } do
-      generate_config(nginx_local_config, nginx_remote_config)
+      generate_config(nginx_local_config, nginx_remote_config, true)
     end
 
     desc "|capistrano-recipes| Bootstraps Nginx to init.d"
