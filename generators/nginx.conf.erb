@@ -11,7 +11,7 @@
         passenger_enabled on;
         <% end %>
         client_max_body_size 500M;
-        server_name <%= server_names || application %>;
+        server_name <%= server_names %>;
 
         # ~2 seconds is often enough for most folks to parse HTML/CSS and
         # retrieve needed images/icons/frames, connections are cheap in

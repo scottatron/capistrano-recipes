@@ -3,6 +3,9 @@ Capistrano::Configuration.instance.load do
   # Where your nginx lives. Usually /opt/nginx or /usr/local/nginx for source compiled.
   set :nginx_path_prefix, "/opt/nginx" unless exists?(:nginx_path_prefix)
 
+  # Server names. Defaults to application name.
+  set :server_names, application unless exists?(:server_names)
+
   # Path to the nginx erb template to be parsed before uploading to remote
   set(:nginx_local_config) { "#{templates_path}/nginx.conf.erb" } unless exists?(:nginx_local_config)
 
