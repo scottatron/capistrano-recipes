@@ -104,7 +104,7 @@
     # you are using ssl as well as port 80.
     server {
       listen <%= application_port_ssl%>;
-      server_name <%= application %>;
+      server_name <%= server_names %>;
       <% if is_using_passenger %>
       rails_env <%= rails_env %>;
       passenger_enabled on;
