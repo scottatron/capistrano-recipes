@@ -7,7 +7,7 @@ Capistrano::Configuration.instance.load do
     
     desc "|capistrano-recipes| Runs bundle install on the app server (internal task)"
     task :install, :roles => :app, :except => { :no_release => true } do
-      run "cd #{current_path} && bundle install --deployment --without=development test"
+      run "cd #{current_path} && bundle install #{bundle_flags}"
     end
   end
 end

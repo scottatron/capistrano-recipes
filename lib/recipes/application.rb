@@ -32,6 +32,9 @@ Capistrano::Configuration.instance.load do
   # RVM settings
   set :using_rvm, true unless exists?(:using_rvm)
   
+  # Bundler settings
+  set :bundle_flags, "--deployment --without=development test" unless exists?(:bundle_flags)
+
   if using_rvm
     $:.unshift(File.expand_path('./lib', ENV['rvm_path']))  # Add RVM's lib directory to the load path.
     require "rvm/capistrano"                                # Load RVM's capistrano plugin.
