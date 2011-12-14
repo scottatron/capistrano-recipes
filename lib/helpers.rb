@@ -80,6 +80,6 @@ end
 # Example: run_rake log:clear
 # =========================================================================
 def run_rake(task)
-  run "cd #{current_path} && rake #{task} RAILS_ENV=#{environment}"
+  run "cd #{current_path} && bundle exec rake #{task} RAILS_ENV=#{environment}"
 end
 
