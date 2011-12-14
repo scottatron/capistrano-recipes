@@ -61,6 +61,16 @@ Capistrano::Configuration.instance.load do
     task :status, :roles => :app , :except => { :no_release => true } do
       sudo "service nginx status"
     end
+
+    desc "|capistrano-recipes| Enable nginx site"
+    task :enable, :roles => :app , :except => { :no_release => true } do
+      sudo "nxensite #{application}"
+    end
+
+    desc "|capistrano-recipes| Disable nginx site"
+    task :disable, :roles => :app , :except => { :no_release => true } do
+      sudo "nxdissite #{application}"
+    end
   end
 
   after 'deploy:setup' do
