@@ -55,11 +55,8 @@ end
 after_fork do |server, worker|
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord::Base)
 
-  # Reset the memcache-based object store
-  Rails.cache.instance_variable_get(:@data).reset if Rails.cache.instance_variable_get(:@data).respond_to?(:reset)
-
-  # Reset the memcache-based session store
-  ActionController::Base.session_options[:cache].reset if ActionController::Base.session_options[:cache].respond_to?(:reset)
+  # Reset the memcache-based object/session store
+  Rails.cache.reset
 
   worker.user(username, group) if Process.euid == 0 && rails_env == 'production'
 end
