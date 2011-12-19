@@ -3,8 +3,9 @@ Capistrano::Configuration.instance.load do
   set :normal_symlinks, %w(tmp log config/database.yml) unless exists?(:normal_symlinks)
   
   # Weird symlinks go somewhere else. Weird.
-  set :weird_symlinks, { 'bundle' => 'vendor/bundle',
-                         'pids'   => 'tmp/pids' } unless exists?(:weird_symlinks)
+  set :weird_symlinks, { 'bundle'  => 'vendor/bundle',
+                         'pids'    => 'tmp/pids',
+                         'sockets' => 'tmp/sockets' } unless exists?(:weird_symlinks)
 
   namespace :symlinks do
     desc "|capistrano-recipes| Make all the symlinks in a single run"
