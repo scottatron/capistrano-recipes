@@ -36,7 +36,7 @@ Capistrano::Configuration.instance.load do
 
     desc "|capistrano-recipes| Update the deployed code."
     task :update_code, :roles => :app, :except => { :no_release => true } do
-      run "cd #{current_path}; git checkout #{branch}; git fetch origin; git pull"
+      run "cd #{current_path}; git fetch; git checkout #{branch}; git reset --hard origin/#{branch}"
     end
 
     desc "|capistrano-recipes| Alias for symlinks:make"
