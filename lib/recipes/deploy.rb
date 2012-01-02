@@ -55,7 +55,7 @@ Capistrano::Configuration.instance.load do
     end
 
     namespace :rollback do
-      desc "|capistrano-recipes| Rollback , :except => { :no_release => true }a single commit."
+      desc "|capistrano-recipes| Rollback a single commit."
       task :default, :roles => :app, :except => { :no_release => true } do
         set :branch, "HEAD^"
         deploy.default
