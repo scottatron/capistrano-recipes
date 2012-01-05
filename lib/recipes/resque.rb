@@ -3,34 +3,34 @@ Capistrano::Configuration.instance.load do
     namespace :worker do
       desc "|capistrano-recipes| List all workers"
       task :list, :roles => :app do
-        run "cd #{current_path} && #{sudo} resque list"
+        run "cd #{current_path} && bundle exec resque list"
       end
     
       desc "|capistrano-recipes| Starts the workers"
       task :start, :roles => :app do
-        run "cd #{current_path} && #{sudo} god start #{resque_service}"
+        run "cd #{current_path} && bundle exec bluepill start resque --no-privileged"
       end
     
       desc "|capistrano-recipes| Stops the workers"
       task :stop, :roles => :app do
-        run "cd #{current_path} && #{sudo} god stop #{resque_service}"
+        run "cd #{current_path} && bundle exec bluepill stop resque --no-privileged"
       end
     
       desc "|capistrano-recipes| Restart all workers"
       task :restart, :roles => :app do
-        run "cd #{current_path} && #{sudo} god restart #{resque_service}"
+        run "cd #{current_path} && bundle exec bluepill restart resque --no-privileged"
       end  
     end
   
     namespace :web do
       desc "|capistrano-recipes| Starts the resque web interface"
       task :start, :roles => :app do
-        run "cd #{current_path}; resque-web -p 9000 -e #{rails_env} "
+        run "cd #{current_path}; bundle exec resque-web -p 9000 -e #{rails_env} "
       end
     
       desc "|capistrano-recipes| Stops the resque web interface"
       task :stop, :roles => :app do
-        run "cd #{current_path}; resque-web -K"
+        run "cd #{current_path}; bundle exec resque-web -K"
       end
     
       desc "|capistrano-recipes| Restarts the resque web interface "
@@ -41,7 +41,7 @@ Capistrano::Configuration.instance.load do
     
       desc "|capistrano-recipes| Shows the status of the resque web interface"
       task :status, :roles => :app do
-        run "cd #{current_path}; resque-web -S"
+        run "cd #{current_path}; bundle exec resque-web -S"
       end 
     end
   end

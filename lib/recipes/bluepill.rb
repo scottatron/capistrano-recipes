@@ -12,9 +12,9 @@ Capistrano::Configuration.instance.load do
       end
     end
     
-    desc "|capistrano-recipes| Load the pill from {your-app}/config/unicorn.pill"
+    desc "|capistrano-recipes| Load the pill from {your-app}/config/master.pill"
     task :init, :roles =>[:app] do
-      run "cd #{current_path} && bundle exec bluepill load #{shared_path}/config/unicorn.pill --no-privileged"
+      run "cd #{current_path} && bundle exec bluepill load #{current_path}/config/master.pill --no-privileged"
     end
  
     desc "|capistrano-recipes| Starts your previous stopped pill"
@@ -29,7 +29,7 @@ Capistrano::Configuration.instance.load do
       run "cd #{current_path} && bundle exec bluepill stop --no-privileged #{args}"
     end
     
-    desc "|capistrano-recipes| Restarts the pill from {your-app}/config/unicorn.pill"
+    desc "|capistrano-recipes| Restarts the pill from {your-app}/config/master.pill"
     task :restart, :roles =>[:app] do
       args = exists?(:options) ? options : ''
       run "cd #{current_path} && bundle exec bluepill restart --no-privileged #{args}"
