@@ -4,11 +4,11 @@ Capistrano::Configuration.instance.load do
     task :quit, :roles => [:app] do
       args = exists?(:options) ? options : ''
       begin
-        run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill stop --no-privileged #{args}"
+        run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} stop --no-privileged #{args}"
       rescue
         puts "Bluepill was unable to finish gracefully all the process"
       ensure
-        run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill quit --no-privileged"
+        run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} quit --no-privileged"
       end
     end
     
@@ -20,25 +20,25 @@ Capistrano::Configuration.instance.load do
     desc "|capistrano-recipes| Starts your previous stopped pill"
     task :start, :roles =>[:app] do
       args = exists?(:options) ? options : ''
-      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill start --no-privileged #{args}"
+      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} start --no-privileged #{args}"
     end
     
     desc "|capistrano-recipes| Stops some bluepill monitored process"
     task :stop, :roles =>[:app] do
       args = exists?(:options) ? options : ''
-      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill stop --no-privileged #{args}"
+      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} stop --no-privileged #{args}"
     end
     
     desc "|capistrano-recipes| Restarts the pill from {your-app}/config/master.pill"
     task :restart, :roles =>[:app] do
       args = exists?(:options) ? options : ''
-      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill restart --no-privileged #{args}"
+      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} restart --no-privileged #{args}"
     end
  
     desc "|capistrano-recipes| Prints bluepills monitored processes statuses"
     task :status, :roles => [:app] do
       args = exists?(:options) ? options : ''
-      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill status --no-privileged #{args}"
+      run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} status --no-privileged #{args}"
     end
   end
 end
