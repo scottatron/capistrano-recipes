@@ -55,16 +55,4 @@ Capistrano::Configuration.instance.load do
   set(:pids_path) { File.join(shared_path, "pids") } unless exists?(:pids_path)
   
   set :monitorer, 'bluepill' unless exists?(:monitorer)
-  
-  # Application settings  
-  set :shared_dirs, %w(config uploads backup bundle tmp log pids sockets) unless exists?(:shared_dirs)
-  
-  namespace :app do
-    task :setup, :roles => :app do
-      commands = shared_dirs.map do |path|
-        "if [ ! -d '#{path}' ]; then mkdir -p #{path}; fi;"
-      end
-      run "cd #{shared_path}; #{commands.join(' ')}"
-    end
-  end
 end
