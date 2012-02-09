@@ -59,6 +59,14 @@ Capistrano::Configuration.instance.load do
       run unicorn_restart_cmd
     end
     
+    desc "|capistrano-recipes| Tail unicorn log file"
+    task :tail, :roles => :app do
+      run "tail -f #{shared_path}/log/unicorn.log" do |channel, stream, data|
+        puts "#{channel[:host]}: #{data}"
+        break if stream == :err
+      end
+    end
+
     desc <<-EOF
     |capistrano-recipes| Parses the configuration file through ERB to fetch our variables and \
     uploads the result to #{unicorn_remote_config}, to be loaded by whoever is booting \
