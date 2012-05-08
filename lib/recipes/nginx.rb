@@ -75,6 +75,6 @@ Capistrano::Configuration.instance.load do
 
   after 'deploy:setup' do
     nginx.setup if Capistrano::CLI.ui.agree("Create nginx configuration file? [Yn]")
-  end if is_using_nginx
+  end if is_using('nginx',:web_server)
 end
 

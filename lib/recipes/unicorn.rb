@@ -86,5 +86,5 @@ Capistrano::Configuration.instance.load do
   
   after 'deploy:setup' do
     unicorn.setup if Capistrano::CLI.ui.agree("Create unicorn configuration file? [Yn]")
-  end if is_using_unicorn
+  end if is_using('unicorn',:app_server)
 end

@@ -1,4 +1,4 @@
-    <% if is_using_unicorn %>
+    <% if is_using('unicorn',:app_server) %>
     upstream <%= application %>_app_server {
         server unix:<%= unicorn_socket %> fail_timeout=0;
     }
@@ -6,7 +6,7 @@
     # <%= application %> Server
     server {
         listen <%= application_port %>;
-        <% if is_using_passenger %>
+        <% if is_using('passenger',:app_server) %>
         rails_env <%= rails_env %>;
         passenger_enabled on;
         <% end %>
@@ -32,7 +32,7 @@
         }
 
         location / {
-          <% if is_using_passenger %>
+          <% if is_using('passenger',:app_server) %>
           rails_env <%= rails_env %>;
           passenger_enabled on;
           <% end %>
@@ -65,7 +65,7 @@
             rewrite (.*) $1.html break;
           }
 
-          <% if is_using_unicorn %>
+          <% if is_using('unicorn',:app_server) %>
           if (!-f $request_filename) {
             proxy_pass http://<%= application %>_app_server;
             break;
@@ -94,7 +94,7 @@
 
     <% if application_uses_ssl %>
 
-    <% if is_using_unicorn %>
+    <% if is_using('unicorn',:app_server) %>
     upstream <%= application %>_app_ssl {
       server unix:<%= unicorn_socket %> fail_timeout=0;
     }
@@ -105,7 +105,7 @@
     server {
       listen <%= application_port_ssl%>;
       server_name <%= server_names %>;
-      <% if is_using_passenger %>
+      <% if is_using('passenger',:app_server) %>
       rails_env <%= rails_env %>;
       passenger_enabled on;
       <% end %>
@@ -128,7 +128,7 @@
       }
 
       location / {
-        <% if is_using_passenger %>
+        <% if is_using('passenger',:app_server) %>
         rails_env <%= rails_env %>;
         passenger_enabled on;
         <% end %>
@@ -170,7 +170,7 @@
           rewrite (.*) $1.html break;
         }
 
-        <% if is_using_unicorn %>
+        <% if is_using('unicorn',:app_server) %>
         if (!-f $request_filename) {
           proxy_pass http://<%= application %>_app_ssl;
           break;
