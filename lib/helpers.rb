@@ -16,10 +16,6 @@ def environment
   end
 end
 
-# def is_app_monitored?
-#   is_using('bluepill', :monitorer) || is_using('god', :monitorer)
-# end
-
 def is_using(something, with_some_var)
  exists?(with_some_var.to_sym) && fetch(with_some_var.to_sym).to_s.downcase == something
 end

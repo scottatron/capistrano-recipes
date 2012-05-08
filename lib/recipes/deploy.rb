@@ -47,6 +47,12 @@ Capistrano::Configuration.instance.load do
             passenger.bounce
           when 'unicorn'
             is_using('bluepill', :monitorer) ? bluepill.restart : unicorn.restart
+          when 'puma'
+            if is_using('bluepill', :monitorer)
+              bluepill.restart
+            else
+              puts "Cannot restart puma without bluepill... doink"
+            end
         end
       else
         puts "Dunno how to restart your internets! kthx!"

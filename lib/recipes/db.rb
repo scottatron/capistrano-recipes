@@ -110,5 +110,5 @@ Capistrano::Configuration.instance.load do
   
   after "deploy:setup" do
     db.create_yaml if Capistrano::CLI.ui.agree("Create database.yml in app's shared path? [Yn]")
-  end
+  end if is_using('mysql', :database)
 end
