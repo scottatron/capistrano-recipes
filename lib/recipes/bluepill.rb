@@ -1,4 +1,7 @@
 Capistrano::Configuration.instance.load do  
+  set(:bluepill_local_config) { File.join(templates_path, "bluepill.pill.erb") } 
+  set(:bluepill_remote_config) { "#{shared_path}/config/master.pill" }
+
   namespace :bluepill do
     desc "|capistrano-recipes| Stop processes that bluepill is monitoring and quit bluepill"
     task :quit, :roles => [:app] do
@@ -40,5 +43,19 @@ Capistrano::Configuration.instance.load do
       args = exists?(:options) ? options : ''
       run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec bluepill #{application}_#{rails_env} status --no-privileged #{args}"
     end
+
+    desc <<-EOF
+    |capistrano-recipes| Parses the configuration file through ERB to fetch our variables and \
+    uploads the result to #{bluepill_remote_config}, to be loaded by whoever is booting \
+    up the bluepill watcher/monitorer
+    EOF
+    task :setup, :roles => :app , :except => { :no_release => true } do
+      generate_config(bluepill_local_config, bluepill_remote_config)
+    end
   end
+
+  after 'deploy:setup' do
+    bluepill.setup if Capistrano::CLI.ui.agree("Create master.pill configuration file? [Yn]")
+  end if is_using('bluepill', :monitorer)
+  #end if is_using_bluepill
 end
