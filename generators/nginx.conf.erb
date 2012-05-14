@@ -1,9 +1,10 @@
-    <% if is_using('unicorn',:app_server) %>
-    upstream <%= application %>_app_server {
-        server unix:<%= unicorn_socket %> fail_timeout=0;
+    <% if (is_using('unicorn',:app_server) || is_using('puma',:app_server))%>
+    upstream <%= application %>_<%= rails_env %>_app_server {
+        server unix:<%= File.join("/var/run/rails/","#{application}", "#{rails_env}.sock") %> fail_timeout=0;
     }
     <% end %>
-    # <%= application %> Server
+
+    # <%= application %> <%= rails_env %> Server
     server {
         listen <%= application_port %>;
         <% if is_using('passenger',:app_server) %>
@@ -20,8 +21,8 @@
 
         # path for static files
         root <%= deploy_to %>/current/public;
-        access_log <%= deploy_to %>/current/log/nginx.access.log;
-        error_log  <%= deploy_to %>/current/log/nginx.error.log info;
+        access_log /var/log/nginx/<%= application %>/<%= rails_env %>.access.log;
+        error_log  /var/log/nginx/<%= application %>/<%= rails_env %>.error.log info;
 
         # this rewrites all the requests to the maintenance.html
         # page if it exists in the doc root. This is for capistrano's
@@ -65,9 +66,9 @@
             rewrite (.*) $1.html break;
           }
 
-          <% if is_using('unicorn',:app_server) %>
+          <% if (is_using('unicorn',:app_server) || is_using('puma',:app_server))%>
           if (!-f $request_filename) {
-            proxy_pass http://<%= application %>_app_server;
+            proxy_pass http://<%= application %>_<%= rails_env %>_app_server;
             break;
           }
           <% end %>
@@ -94,9 +95,9 @@
 
     <% if application_uses_ssl %>
 
-    <% if is_using('unicorn',:app_server) %>
-    upstream <%= application %>_app_ssl {
-      server unix:<%= unicorn_socket %> fail_timeout=0;
+    <% if (is_using('unicorn',:app_server) || is_using('puma',:app_server))%>
+    upstream <%= application %>_<%= rails_env %>_app_ssl {
+      server unix:<%= File.join(sockets_path,"#{app_server}","#{application}_#{rails_env}.sock") %> fail_timeout=0;
     }
     <% end %>
 
@@ -116,8 +117,8 @@
       client_max_body_size    50M;
 
       root <%= deploy_to %>/current/public;
-      access_log <%= deploy_to %>/current/log/nginx.access.log main;
-      error_log  <%= deploy_to %>/current/log/nginx.error.log info;
+      access_log /var/log/nginx/<%= application %>_<%= rails_env %>.access.log main;
+      error_log  /var/log/nginx/<%= application %>_<%= rails_env %>.error.log info;
 
       # this rewrites all the requests to the maintenance.html
       # page if it exists in the doc root. This is for capistrano's
@@ -170,9 +171,9 @@
           rewrite (.*) $1.html break;
         }
 
-        <% if is_using('unicorn',:app_server) %>
+        <% if (is_using('unicorn',:app_server) || is_using('puma',:app_server))%>
         if (!-f $request_filename) {
-          proxy_pass http://<%= application %>_app_ssl;
+          proxy_pass http://<%= application %>_<%= rails_env %>_app_ssl;
           break;
         }
         <% end %>

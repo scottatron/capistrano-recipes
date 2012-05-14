@@ -1,41 +1,44 @@
 Capistrano::Configuration.instance.load do
 
   # Where your nginx lives. Usually /opt/nginx or /usr/local/nginx for source compiled.
-  set :nginx_path_prefix, "/opt/nginx" unless exists?(:nginx_path_prefix)
+  set :nginx_sites_enabled_path, "/etc/nginx/sites-enabled" unless exists?(:nginx_sites_enabled_path)
 
   # Server names. Defaults to application name.
-  set :server_names, application unless exists?(:server_names)
+  set :server_names, "#{application}_#{rails_env}" unless exists?(:server_names)
 
   # Path to the nginx erb template to be parsed before uploading to remote
   set(:nginx_local_config) { "#{templates_path}/nginx.conf.erb" } unless exists?(:nginx_local_config)
 
-  # Init scripts
-  set(:nginx_init_local) { "#{docs_path}/nginx/nginx.init" }
-  set :nginx_init_temp,   '/tmp/nginx.init'
-  set :nginx_init_remote, '/etc/init.d/nginx'
-
   # Path to where your remote config will reside (I use a directory sites inside conf)
   set(:nginx_remote_config) do
-    "#{nginx_path_prefix}/conf/sites/#{application}.conf"
+    "#{shared_path}/config/nginx/#{application}_#{rails_env}.conf"
   end unless exists?(:nginx_remote_config)
+
+  set :nginx_site_symlink_sites_enabled, File.join(nginx_sites_enabled_path, "#{application}_#{rails_env}") unless exists?(:nginx_site_symlink_sites_enabled)
 
   # Nginx tasks are not *nix agnostic, they assume you're using Debian/Ubuntu.
   # Override them as needed.
   namespace :nginx do
     desc "|capistrano-recipes| Parses and uploads nginx configuration for this app."
     task :setup, :roles => :app , :except => { :no_release => true } do
-      generate_config(nginx_local_config, nginx_remote_config, true)
+      generate_config(nginx_local_config, nginx_remote_config)
+      # create symbolic link on ubuntu
+      sudo run <<-CMD
+        ln -s "#{nginx_remote_config}" "#{nginx_site_symlink_sites_enabled}"
+      CMD
     end
 
-    desc "|capistrano-recipes| Bootstraps Nginx to init.d"
-    task :setup_init, :roles => :app do
-      upload nginx_init_local, nginx_init_temp, :via => :scp
-      sudo "mv #{nginx_init_temp} #{nginx_init_remote}"
-      # Allow executing the init.d script
-      sudo "chmod +x #{nginx_init_remote}"
-      # Make it run at bootup
-      sudo "update-rc.d nginx defaults"
-    end
+    # this should be done through apt-get or similar... 
+
+    # desc "|capistrano-recipes| Bootstraps Nginx to init.d"
+    # task :setup_init, :roles => :app do
+    #   upload nginx_init_local, nginx_init_temp, :via => :scp
+    #   sudo "mv #{nginx_init_temp} #{nginx_init_remote}"
+    #   # Allow executing the init.d script
+    #   sudo "chmod +x #{nginx_init_remote}"
+    #   # Make it run at bootup
+    #   sudo "update-rc.d nginx defaults"
+    # end
 
     desc "|capistrano-recipes| Parses config file and outputs it to STDOUT (internal task)"
     task :parse, :roles => :app , :except => { :no_release => true } do
@@ -64,12 +67,12 @@ Capistrano::Configuration.instance.load do
 
     desc "|capistrano-recipes| Enable nginx site"
     task :enable, :roles => :app , :except => { :no_release => true } do
-      sudo "nxensite #{application}"
+      sudo "nxensite #{application}_#{rails_env}"
     end
 
     desc "|capistrano-recipes| Disable nginx site"
     task :disable, :roles => :app , :except => { :no_release => true } do
-      sudo "nxdissite #{application}"
+      sudo "nxdissite #{application}_#{rails_env}"
     end
   end
 
