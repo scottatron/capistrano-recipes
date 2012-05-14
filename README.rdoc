@@ -104,13 +104,19 @@ generate the appropriate configuration file for it based on your other variables
 
 If you're running Phusion Passenger (http://www.modrails.com) be sure you add this line to config/deploy.rb:
 
-  set :server, :passenger
+  set :app_server, :passenger
 
 ===Unicorn
   
 If you're running Unicorn (http://unicorn.bogomips.org/) be sure to add this line instead:
   
-  set :server, :unicorn
+  set :app_server, :unicorn
+
+===Unicorn
+  
+If you're running Puma (http://puma.io/) be sure to add this line instead:
+  
+  set :app_server, :puma
 
 ==Contributors (thank you!)
 

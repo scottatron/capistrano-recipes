@@ -3,8 +3,8 @@ require "rvm/capistrano"
 
 Capistrano::Configuration.instance.load do
   # User settings
-#  set :user, 'deploy'   unless exists?(:user)
-#  set :group,'www-data' unless exists?(:group)
+  set :user, 'deploy'   unless exists?(:user)
+  set :group,'www-data' unless exists?(:group)
   
   # HACK
   # Server settings
@@ -13,7 +13,7 @@ Capistrano::Configuration.instance.load do
   puts "Please define app_server" unless exists?(:app_server)
   puts "Please define web_server" unless exists?(:web_server)
 
-  #set :runner, user               unless exists?(:runner)
+  set :runner, user               unless exists?(:runner)
   set :application_port, 80        unless exists?(:application_port)
 
   set :application_uses_ssl, false unless exists?(:application_uses_ssl)

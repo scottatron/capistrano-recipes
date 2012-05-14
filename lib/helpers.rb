@@ -36,8 +36,12 @@ end
 
 def parse_config(file)
   require 'erb'  #render not available in Capistrano 2
-  template=File.read(file)          # read it
-  return ERB.new(template).result(binding)   # parse it
+  template  = File.read(file)          # read it
+  returnval = ERB.new(template).result(binding)   # parse it
+  puts "------- TEMPLATE -----------" 
+  puts returnval
+  puts "------- END TEMPLATE -------"
+  return returnval
 end
 
 # =========================================================================

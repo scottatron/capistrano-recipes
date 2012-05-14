@@ -1,6 +1,6 @@
 Capistrano::Configuration.instance.load do  
   set(:bluepill_local_config) { File.join(templates_path, "bluepill.pill.erb") } 
-  set(:bluepill_remote_config) { "#{shared_path}/config/master.pill" }
+  set(:bluepill_remote_config) { File.join(shared_path, "pids", "config", "master.pill") }
 
   namespace :bluepill do
     desc "|capistrano-recipes| Stop processes that bluepill is monitoring and quit bluepill"
