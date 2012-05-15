@@ -11,7 +11,7 @@ Capistrano::Configuration.instance.load do
 
   # Path to where your remote config will reside (I use a directory sites inside conf)
   set(:nginx_remote_config) do
-    "#{shared_path}/config/nginx/#{application}_#{rails_env}.conf"
+    File.join("#{shared_path}", "config", "nginx_#{application}_#{rails_env}.conf")
   end unless exists?(:nginx_remote_config)
 
   set :nginx_site_symlink_sites_enabled, File.join(nginx_sites_enabled_path, "#{application}_#{rails_env}") unless exists?(:nginx_site_symlink_sites_enabled)
@@ -24,7 +24,7 @@ Capistrano::Configuration.instance.load do
       generate_config(nginx_local_config, nginx_remote_config)
       # create symbolic link on ubuntu
       sudo run <<-CMD
-        ln -s "#{nginx_remote_config}" "#{nginx_site_symlink_sites_enabled}"
+        ln -s -f "#{nginx_remote_config}" "#{nginx_site_symlink_sites_enabled}"
       CMD
     end
 

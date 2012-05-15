@@ -1,25 +1,20 @@
 <% 
 puma_bin            = 'bundle exec puma'
-#puma_sock           = "unix://" + File.join(sockets_path,"#{app_server}","#{application}_#{rails_env}.sock")
 puma_config         = File.join("#{shared_path}", "config", "puma.rb")
-#puma_min_threads    = 8
-#puma_max_threads    = 32
-working_dir         = 'release_path'
-puma_pid            = File.join(pid_path,"#{app_server}","#{application}", "#{rails_env}.pid") unless exists?(:puma_pid)
-
-# to change between socks/tcp options should be added instead of static?
 %>
-# puma
-Bluepill.application(app_name) do |app|
+Bluepill.application("<%= "#{bluepill_app}" %>") do |app|
+ # Bluepill Puma setup
     app.process("puma") do |process|
-        process.start_command = <%= "#{puma_bin} -C #{puma_config}" %>
-        process.pid_file = <%= puma_pid %>
+        process.start_command = "<%= "#{puma_bin} -C #{puma_config}" %>"
+        process.pid_file = "<%= bluepill_puma_pid %>"
         process.daemonize = true
         process.checks :cpu_usage, :every => 10.seconds, :below => 95, :times => 4
         process.checks :mem_usage, :every => 10.seconds, :below => 256.megabytes,  :times => [3,5]
         process.start_grace_time = 4.seconds
         process.stop_grace_time = 10.seconds
         process.restart_grace_time = process.start_grace_time + process.stop_grace_time
-        process.working_dir = working_dir
+        process.working_dir = "<%= bluepill_working_dir %>"
+        process.uid = "deploy"
+        process.gid = "www-data"
     end
 end

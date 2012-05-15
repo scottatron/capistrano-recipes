@@ -7,7 +7,7 @@ Capistrano::Configuration.instance.load do
   set :puma_socket, File.join("/var/run/", "rails", "#{application}", "#{rails_env}.sock") unless exists?(:puma_socket)
 
   # Defines where the pid will live.
-  set(:puma_pid) { File.join(pids_path,"#{app_server}","#{application}", "#{rails_env}.pid") } unless exists?(:puma_pid)
+  set(:puma_pid) { File.join(pids_path,"#{app_server}.pid") } unless exists?(:puma_pid)
   set(:puma_state) { File.join(shared_path, "puma.state") } unless exists?(:puma_state)
 
   set :puma_activate_control_app, false unless exists?(:puma_activate_control_app)
