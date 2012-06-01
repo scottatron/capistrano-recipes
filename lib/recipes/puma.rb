@@ -4,7 +4,7 @@ Capistrano::Configuration.instance.load do
 
   # The wrapped bin to start puma (bundle exec power...)
   set :puma_bin, 'bundle exec puma' unless exists?(:puma_bin)
-  set :puma_socket, File.join("/var/run/", "rails", "#{application}", "#{rails_env}.sock") unless exists?(:puma_socket)
+  set :puma_socket, File.join("#{shared_path}","sockets", "puma.sock") unless exists?(:puma_socket)
 
   # Defines where the pid will live.
   set(:puma_pid) { File.join(pids_path,"#{app_server}.pid") } unless exists?(:puma_pid)

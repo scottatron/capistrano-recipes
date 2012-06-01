@@ -26,6 +26,12 @@ Capistrano::Configuration.instance.load do
       sudo run <<-CMD
         ln -s -f "#{nginx_remote_config}" "#{nginx_site_symlink_sites_enabled}"
       CMD
+      sudo run <<-CMD
+        mkdir -p /var/log/nginx/#{application}
+      CMD
+      # sudo run <<-CMD
+      #   chown www-data:www-data /var/log/nginx/#{application}
+      # CMD
     end
 
     # this should be done through apt-get or similar... 

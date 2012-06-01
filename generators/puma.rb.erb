@@ -1,8 +1,8 @@
 min_threads <%= puma_min_threads %>
 max_threads <%= puma_max_threads %>
-bind <%= puma_socket %>
-pidfile <%= puma_pid %>
-state <%= puma_state %>
+bind "<%= puma_socket %>"
+pidfile "<%= puma_pid %>"
+state "<%= puma_state %>"
 <%= "activate_control_app" if puma_activate_control_app %>
 <%= "on_restart on_restart_block" if puma_on_restart_active %>
 

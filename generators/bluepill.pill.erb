@@ -3,6 +3,9 @@ puma_bin            = 'bundle exec puma'
 puma_config         = File.join("#{shared_path}", "config", "puma.rb")
 %>
 Bluepill.application("<%= "#{bluepill_app}" %>") do |app|
+    app.environment = { 'RAILS_ENV' => '<%= "#{rails_env}" %>' }
+    app.uid = "<%= "#{user}" %>"
+    app.gid = "<%= "#{group}" %>"
  # Bluepill Puma setup
     app.process("puma") do |process|
         process.start_command = "<%= "#{puma_bin} -C #{puma_config}" %>"
@@ -10,11 +13,11 @@ Bluepill.application("<%= "#{bluepill_app}" %>") do |app|
         process.daemonize = true
         process.checks :cpu_usage, :every => 10.seconds, :below => 95, :times => 4
         process.checks :mem_usage, :every => 10.seconds, :below => 256.megabytes,  :times => [3,5]
-        process.start_grace_time = 4.seconds
-        process.stop_grace_time = 10.seconds
+        process.start_grace_time = 15.seconds
+        process.stop_grace_time = 15.seconds
         process.restart_grace_time = process.start_grace_time + process.stop_grace_time
         process.working_dir = "<%= bluepill_working_dir %>"
-        process.uid = "deploy"
-        process.gid = "www-data"
+        process.uid = "<%= "#{user}" %>"
+        process.gid = "<%= "#{group}" %>"
     end
 end
