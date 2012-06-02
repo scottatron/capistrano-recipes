@@ -20,5 +20,5 @@ end script
 #env PATH=/opt/ruby-enterprise-1.8.7-2010.01/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 script
   chdir <%= "#{current_path}" %>
-  exec bundle exec bluepill load <%= "#{bluepill_remote_config}" %>
+  exec su deploy -c 'bundle exec bluepill load <%= "#{bluepill_remote_config}" %>'
 end script
