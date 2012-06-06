@@ -33,15 +33,14 @@
         }
 
         location / {
-          <% if nginx_simple_auth %>
-            auth_basic "<%= nginx_simple_auth_message %>"
-            auth_basic_user_file <%= File.join("#{shared_path}", "config", ".htpasswd") %>
-          <% end %>
-          
-          <% if is_using('passenger',:app_server) %>
+        <% if nginx_simple_auth %>
+          auth_basic "<%= nginx_simple_auth_message %>";
+          auth_basic_user_file <%= File.join("#{shared_path}", "config", ".htpasswd") %>;
+        <% end %>
+        <% if is_using('passenger',:app_server) %>
           rails_env <%= rails_env %>;
           passenger_enabled on;
-          <% end %>
+        <% end %>
 
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header Host $http_host;
