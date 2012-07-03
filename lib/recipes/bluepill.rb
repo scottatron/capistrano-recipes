@@ -6,6 +6,9 @@ Capistrano::Configuration.instance.load do
   set(:bluepill_puma_pid) { File.join(pids_path,"#{app_server}.pid") } unless exists?(:bluepill_puma_pid)
   set(:bluepill_working_dir) {"#{current_path}"} unless exists?(:bluepill_working_dir)
   set(:bluepill_app) {"#{application}_#{rails_env}"} unless exists?(:bluepill_app)
+  set(:bluepill_start_grace_time) { "25.seconds" } unless exists?(:bluepill_start_grace_time)
+  set(:bluepill_stop_grace_time)  { "15.seconds" } unless exists?(:bluepill_stop_grace_time)
+
   namespace :bluepill do
     desc "|capistrano-recipes| Stop processes that bluepill is monitoring and quit bluepill"
     task :quit, :roles => [:app] do

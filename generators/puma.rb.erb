@@ -3,9 +3,8 @@ bind "<%= puma_socket %>"
 pidfile "<%= puma_pid %>"
 state_path "<%= puma_state %>"
 <%= "activate_control_app" if puma_activate_control_app %>
-<%= "on_restart on_restart_block" if puma_on_restart_active %>
 
 # TODO - fix restart block!
-def on_restart_block
-  puts "Restarting puma"
-end
+<%= "def on_restart"             if puma_on_restart_active %>
+<%= "  puts \"Restarting puma\"" if puma_on_restart_active %>
+<%= "end"                        if puma_on_restart_active %>

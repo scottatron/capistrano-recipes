@@ -11,10 +11,10 @@ Bluepill.application("<%= "#{bluepill_app}" %>") do |app|
         process.start_command = "<%= "#{puma_bin} -C #{puma_config}" %>"
         process.pid_file = "<%= bluepill_puma_pid %>"
         process.daemonize = true
-        process.checks :cpu_usage, :every => 10.seconds, :below => 95, :times => 4
+        process.checks :cpu_usage, :every => 10.seconds, :below => 95, :times => 5
         process.checks :mem_usage, :every => 10.seconds, :below => 256.megabytes,  :times => [3,5]
-        process.start_grace_time = 15.seconds
-        process.stop_grace_time = 15.seconds
+        process.start_grace_time = <%= "#{bluepill_start_grace_time}" %>
+        process.stop_grace_time = <%= "#{bluepill_stop_grace_time}" %>
         process.restart_grace_time = process.start_grace_time + process.stop_grace_time
         process.working_dir = "<%= bluepill_working_dir %>"
         process.uid = "<%= "#{user}" %>"
