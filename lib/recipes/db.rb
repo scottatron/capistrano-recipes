@@ -113,7 +113,7 @@ Capistrano::Configuration.instance.load do
   end if is_using('mysql', :database)
 
   before "symlinks:make" do
-    run "rm #{current_path}/config/database.yml"
+    run "rm -f #{release_path}/config/database.yml"
   end if is_using('mysql', :database)
   
 end
