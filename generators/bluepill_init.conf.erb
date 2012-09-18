@@ -1,3 +1,4 @@
+<% ruby_version     = "1.9.3" if ruby_version.nil? %>
 # bluepill - process monitor - 
 # Rails application: <%= "#{application}" %>
 # Environment: <%= "#{rails_env}" %>
@@ -6,19 +7,27 @@
 
 description     "Simple process monitoring tool for <%= "#{application}" %> - <%= "#{rails_env}" %>"
 
-start on runlevel [2345]
-stop on runlevel [!2345]
+#start on runlevel [2345]
+start on (local-filesystems and net-device-up IFACE=eth0)
+stop on shutdown
 
 expect daemon
-respawn
+# respawn
 
 pre-start script
+  echo "Pre-start <%= "#{application}" %>"
   mkdir -p /var/run/bluepill
-  chown -R deploy:www-data /var/run/bluepill
+  chown -R <%= "#{user}:#{group}" %> /var/run/bluepill
 end script
 
-#env PATH=/opt/ruby-enterprise-1.8.7-2010.01/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-script
-  chdir <%= "#{current_path}" %>
-  exec su deploy -c 'bundle exec bluepill load <%= "#{bluepill_remote_config}" %>'
+pre-stop script
+  echo "Pre-stop <%= "#{application}" %>"
+  exec su -c "source '/home/leif/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill normedia-download_staging stop --no-privileged" <%= "#{user}" %>
 end script
+
+script
+  echo "Starting <%= "#{application}" %>"
+  exec su -c "source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
+end script
+
+
