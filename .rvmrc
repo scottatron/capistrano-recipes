@@ -1,2 +1,2 @@
-rvm ree@capistrano-recipes --create
+rvm 1.9.3@capistrano-recipes --create
 

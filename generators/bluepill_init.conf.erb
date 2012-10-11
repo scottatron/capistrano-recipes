@@ -8,7 +8,7 @@
 description     "Simple process monitoring tool for <%= "#{application}" %> - <%= "#{rails_env}" %>"
 
 #start on runlevel [2345]
-start on (local-filesystems and net-device-up IFACE=eth0)
+start on (local-filesystems and net-device-up IFACE=eth0 and running mongodb)
 stop on shutdown
 
 expect daemon
@@ -22,12 +22,18 @@ end script
 
 pre-stop script
   echo "Pre-stop <%= "#{application}" %>"
-  exec su -c "source '/home/leif/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill normedia-download_staging stop --no-privileged" <%= "#{user}" %>
+  # if needed to use different rubies:
+  # exec su -c "source '/home/leif/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill normedia-download_staging stop --no-privileged" <%= "#{user}" %>
+  # if a wrapper has been created (recommended!)
+  exec su -c "bootup_bluepill stop <%= "#{application}" %> --no-privileged" <%= "#{user}" %>
 end script
 
 script
   echo "Starting <%= "#{application}" %>"
-  exec su -c "source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
+  # if needed to use different rubies:
+  # exec su -c "source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
+  # if a wrapper has been created (recommended!)
+  exec su -c ""source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>;RAILS_ENV=<% #{rails_env} %> bootup_bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
 end script
 
 
