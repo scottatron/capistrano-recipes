@@ -12,6 +12,13 @@ Gemfile*  text eol=lf
 Rakefile  text eol=lf
 README    text eol=lf
 *.ru      text eol=lf
+LICENSE   text eol=lf
+README*   text eol=lf
+VERSION   text eol=lf
+.gitattributes  text eol=lf
+doc/god/*       text eol=lf
+.gitignore      text eol=lf
+.rvmrc          text eol=lf
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary
