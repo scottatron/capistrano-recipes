@@ -1,5 +1,5 @@
 Capistrano::Configuration.instance.load do
-  set :shared_children, %w(system log pids config sockets)
+  # set :shared_children, %w(public/system log pids sockets)
 
   namespace :deploy do
     desc "|capistrano-recipes| Destroys everything"
