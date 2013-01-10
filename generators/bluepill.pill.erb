@@ -3,21 +3,38 @@ puma_bin            = 'bundle exec puma'
 puma_config         = File.join("#{shared_path}", "config", "puma.rb")
 %>
 Bluepill.application("<%= "#{bluepill_app}" %>") do |app|
-    app.environment = { 'RAILS_ENV' => '<%= "#{rails_env}" %>' }
-    app.uid = "<%= "#{user}" %>"
-    app.gid = "<%= "#{group}" %>"
- # Bluepill Puma setup
-    app.process("puma") do |process|
-        process.start_command = "<%= "#{puma_bin} -C #{puma_config}" %>"
-        process.pid_file = "<%= bluepill_puma_pid %>"
-        process.daemonize = true
-        process.checks :cpu_usage, :every => 10.seconds, :below => 95, :times => 5
-        process.checks :mem_usage, :every => 10.seconds, :below => 256.megabytes,  :times => [3,5]
-        process.start_grace_time = <%= "#{bluepill_start_grace_time}" %>
-        process.stop_grace_time = <%= "#{bluepill_stop_grace_time}" %>
-        process.restart_grace_time = process.start_grace_time + process.stop_grace_time
-        process.working_dir = "<%= bluepill_working_dir %>"
-        process.uid = "<%= "#{user}" %>"
-        process.gid = "<%= "#{group}" %>"
-    end
+  app.environment = { 'RAILS_ENV' => '<%= "#{rails_env}" %>' }
+  app.uid = "<%= "#{user}" %>"
+  app.gid = "<%= "#{group}" %>"
+  <% if bluepill_use_puma == true %>
+# Bluepill Puma setup
+  app.process("puma") do |process|
+    process.start_command             = "<%= "#{puma_bin} -C #{puma_config}" %>"
+    process.pid_file                  = "<%= bluepill_puma_pid %>"
+    process.daemonize                 = true
+    process.checks :cpu_usage, :every => 15.seconds, :below => 95, :times => 5
+    process.checks :mem_usage, :every => 15.seconds, :below => 256.megabytes,  :times => [3,5]
+    process.start_grace_time          = <%= "#{bluepill_start_grace_time}" %>
+    process.stop_grace_time           = <%= "#{bluepill_stop_grace_time}" %>
+    process.restart_grace_time        = <%= "#{bluepill_restart_grace_time}" %>
+    process.working_dir               = "<%= bluepill_working_dir %>"
+    process.uid                       = "<%= "#{user}" %>"
+    process.gid                       = "<%= "#{group}" %>"
+  end
+  <% end %>
+
+  <% if bluepill_use_delayed_job == true %>
+  # Bluepill delayed job setup
+  app.process("delayed_job") do |process|
+    process.working_dir        = "<%= "#{current_path}" %>"
+    process.start_grace_time   = <%= "#{bluepill_start_grace_time}" %>
+    process.stop_grace_time    = <%= "#{bluepill_stop_grace_time}" %>
+    process.restart_grace_time = <%= "#{bluepill_restart_grace_time}" %>
+    process.start_command      = "<%= "bundle exec ruby script/delayed_job start" %>"
+    process.stop_command       = "<%= "bundle exec ruby script/delayed_job stop" %>"
+    process.pid_file           = "<%= bluepill_delayed_job_pid %>"
+    process.uid                = "<%= "#{user}" %>"
+    process.gid                = "<%= "#{group}" %>"
+  end
+  <% end %>
 end

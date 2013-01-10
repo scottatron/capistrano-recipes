@@ -22,18 +22,12 @@ end script
 
 pre-stop script
   echo "Pre-stop <%= "#{application}" %>"
-  # if needed to use different rubies:
-  # exec su -c "source '/home/leif/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill normedia-download_staging stop --no-privileged" <%= "#{user}" %>
-  # if a wrapper has been created (recommended!)
-  exec su -c "bootup_bluepill stop <%= "#{application}" %> --no-privileged" <%= "#{user}" %>
+  # When running RVM system-wide this should work:
+  exec su -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill stop <%= "#{application}_#{rails_env}"%> --no-privileged" <%= "#{user}" %>
 end script
 
 script
   echo "Starting <%= "#{application}" %>"
-  # if needed to use different rubies:
-  # exec su -c "source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>; cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
-  # if a wrapper has been created (recommended!)
-  exec su -c ""source '/home/<%= "#{user}" %>/.rvm/scripts/rvm';rvm <%= "#{ruby_version}" %>;RAILS_ENV=<% #{rails_env} %> bootup_bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
+  # When running RVM system-wide this should work:
+  exec su -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
 end script
-
-
