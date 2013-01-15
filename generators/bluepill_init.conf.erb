@@ -1,3 +1,7 @@
+# ADD DELETE OF PUMA SOCKET IN PRE-START
+# FIX FOR MYSQL
+# FIX TO BE LIKE THE ONE WORKING ON HORSE!
+
 <% ruby_version     = "1.9.3" if ruby_version.nil? %>
 # bluepill - process monitor - 
 # Rails application: <%= "#{application}" %>
@@ -23,11 +27,11 @@ end script
 pre-stop script
   echo "Pre-stop <%= "#{application}" %>"
   # When running RVM system-wide this should work:
-  exec su -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill stop <%= "#{application}_#{rails_env}"%> --no-privileged" <%= "#{user}" %>
+  exec su - -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill stop <%= "#{application}_#{rails_env}"%> --no-privileged" <%= "#{user}" %>
 end script
 
 script
   echo "Starting <%= "#{application}" %>"
   # When running RVM system-wide this should work:
-  exec su -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
+  exec su - -c "cd <%= "#{current_path}" %>; RAILS_ENV=<%= "#{rails_env}" %> bundle exec bluepill load <%= "#{bluepill_remote_config}" %> --no-privileged" <%= "#{user}" %>
 end script
