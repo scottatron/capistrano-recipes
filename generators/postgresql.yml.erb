@@ -1,8 +1,9 @@
 production:
-  adapter: pg
+  adapter: em_postgresql
   encoding: unicode
   database: <%= postgresql_database %>
   pool: 5
   username: <%= postgresql_user %>
   password: <%= postgresql_password %>
   host: <%= postgresql_host %>
+  connections: 5
