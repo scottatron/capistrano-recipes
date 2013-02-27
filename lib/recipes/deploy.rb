@@ -6,7 +6,8 @@ Capistrano::Configuration.instance.load do
     task :seppuku, :roles => :app, :except => { :no_release => true } do
       run "rm -rf #{current_path}; rm -rf #{shared_path}"
     end
-
+    before 'deploy:setup','rvm:install_rvm'
+    before 'deploy:setup', 'rvm:install_ruby'
     desc "|capistrano-recipes| Uploads your local config.yml to the server"
     task :configure, :roles => :app, :except => { :no_release => true } do
       generate_config('config/config.yml', "#{shared_path}/config/config.yml")

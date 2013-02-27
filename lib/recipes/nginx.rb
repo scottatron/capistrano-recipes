@@ -31,16 +31,21 @@ Capistrano::Configuration.instance.load do
   # Nginx tasks are not *nix agnostic, they assume you're using Debian/Ubuntu.
   # Override them as needed.
   namespace :nginx do
+    desc "|capistrano-recipes| Install latest stable release of nginx"
+    task :install, roles: :app, :except => { :no_release => true } do
+      run "#{sudo} apt-get -y install python-software-properties"
+      #run "#{sudo} add-apt-repository ppa:nginx/stable"
+      run "#{sudo} apt-get -y update"
+      run "#{sudo} apt-get -y install nginx"
+    end
+    after "deploy:install", "nginx:install"
+
     desc "|capistrano-recipes| Parses and uploads nginx configuration for this app."
     task :setup, :roles => :app , :except => { :no_release => true } do
       generate_config(nginx_local_config, nginx_remote_config)
       # create symbolic link on ubuntu
-      sudo run <<-CMD
-        ln -s -f "#{nginx_remote_config}" "#{nginx_site_symlink_sites_enabled}"
-      CMD
-      sudo run <<-CMD
-        mkdir -p /var/log/nginx/#{application}
-      CMD
+      run "#{sudo} ln -s -f #{nginx_remote_config} #{nginx_site_symlink_sites_enabled}"
+      run "#{sudo} mkdir -p /var/log/nginx/#{application}"
       # sudo run <<-CMD
       #   chown www-data:www-data /var/log/nginx/#{application}
       # CMD

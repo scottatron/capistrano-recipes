@@ -16,6 +16,10 @@ def environment
   end
 end
 
+def set_default(name, *args, &block)
+  set(name, *args, &block) unless exists?(name)
+end
+
 def is_using(something, with_some_var)
  exists?(with_some_var.to_sym) && fetch(with_some_var.to_sym).to_s.downcase == something
 end

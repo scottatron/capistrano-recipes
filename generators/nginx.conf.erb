@@ -1,6 +1,6 @@
-    <% if (is_using('unicorn',:app_server) || is_using('puma',:app_server))%>
+    <% if is_using('unicorn',:app_server) %>
     upstream <%= application %>_<%= rails_env %>_app_server {
-        server unix:<%= File.join("#{shared_path}","sockets", "puma.sock") %> fail_timeout=0;
+        server unix:<%= File.join(sockets_path,"#{app_server}","#{application}_#{rails_env}.sock") %> fail_timeout=0;
     }
     <% end %>
 

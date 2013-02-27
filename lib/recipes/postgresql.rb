@@ -1,8 +1,13 @@
+require 'active_support/secure_random'
+
 Capistrano::Configuration.instance.load do
   set_default(:postgresql_host, "localhost")
   set_default(:postgresql_user) { "#{application}" }
-  set_default(:postgresql_password) { Capistrano::CLI.password_prompt "PostgreSQL Password: " }
+  set_default(:postgresql_password) { ActiveSupport::SecureRandom.base64(16) }
   set_default(:postgresql_database) { "#{application}_production" }
+
+  set(:postgresql_database_template) { File.join(templates_path, "postgresql.yml.erb") } 
+  set(:postgresql_database_config) { "#{shared_path}/config/database.yml" }
 
   namespace :postgresql do
     desc "Install the latest stable release of PostgreSQL."
@@ -24,12 +29,12 @@ Capistrano::Configuration.instance.load do
       run %Q{#{sudo} -u postgres psql -c "create user #{postgresql_user} with password '#{postgresql_password}';"}
       run %Q{#{sudo} -u postgres psql -c "create database #{postgresql_database} owner #{postgresql_user};"}
     end
-    after "deploy:setup", "postgresql:create_database"
+    after "postgresql:setup", "postgresql:create_database"
 
     desc "Generate the database.yml configuration file."
     task :setup, roles: :app do
       run "mkdir -p #{shared_path}/config"
-      template "postgresql.yml.erb", "#{shared_path}/config/database.yml"
+      generate_config(postgresql_database_template, postgresql_database_config)
     end
     after "deploy:setup", "postgresql:setup"
 
