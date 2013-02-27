@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
-    "dark-capistrano-recipes.gemspec",
+    "capistrano-recipes.gemspec",
     "doc/god/god",
     "doc/god/god.conf",
     "doc/god/god.init.erb",
