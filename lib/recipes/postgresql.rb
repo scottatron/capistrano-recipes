@@ -2,7 +2,7 @@ require 'active_support/secure_random'
 
 Capistrano::Configuration.instance.load do
   set_default(:postgresql_host, "localhost")
-  set_default(:postgresql_user) { "#{application}".downcase }
+  set_default(:postgresql_user) { "#{user}".downcase }
   set_default(:postgresql_password) { ActiveSupport::SecureRandom.base64(16) }
   set_default(:postgresql_database) { "#{application}_production".downcase }
 
