@@ -2,9 +2,9 @@ require 'active_support/secure_random'
 
 Capistrano::Configuration.instance.load do
   set_default(:postgresql_host, "localhost")
-  set_default(:postgresql_user) { "#{application}" }
+  set_default(:postgresql_user) { "#{application}".downcase }
   set_default(:postgresql_password) { ActiveSupport::SecureRandom.base64(16) }
-  set_default(:postgresql_database) { "#{application}_production" }
+  set_default(:postgresql_database) { "#{application}_production".downcase }
 
   set(:postgresql_database_template) { File.join(templates_path, "postgresql.yml.erb") } 
   set(:postgresql_database_config) { "#{shared_path}/config/database.yml" }

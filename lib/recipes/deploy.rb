@@ -14,9 +14,10 @@ Capistrano::Configuration.instance.load do
     end
 
     desc "|capistrano-recipes| Create Session_Store config"
-    task :session_store do
+    task :session_store, :roles => :app, :except => { :no_release => true } do
       run_rake("config/initializers/session_store.rb")
     end
+    
     after 'deploy:setup', 'deploy:session_store'
 
     desc <<-DESC
