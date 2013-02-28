@@ -21,8 +21,8 @@
 
         # path for static files
         root <%= deploy_to %>/current/public;
-        access_log <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.access.log" %>
-        error_log  <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.error.log info" %>
+        access_log <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.access.log" %> main;
+        error_log  <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.error.log" %> main;
 
         # this rewrites all the requests to the maintenance.html
         # page if it exists in the doc root. This is for capistrano's
@@ -121,8 +121,8 @@
       client_max_body_size    50M;
 
       root <%= deploy_to %>/current/public;
-      access_log /var/log/nginx/<%= application %>_<%= rails_env %>.access.log main;
-      error_log  /var/log/nginx/<%= application %>_<%= rails_env %>.error.log info;
+      access_log <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.access.log" %> main;
+      error_log  <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.error.log" %> main;
 
       # this rewrites all the requests to the maintenance.html
       # page if it exists in the doc root. This is for capistrano's
