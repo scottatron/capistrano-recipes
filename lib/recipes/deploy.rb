@@ -19,6 +19,7 @@ Capistrano::Configuration.instance.load do
     end
     
     after 'deploy:setup', 'deploy:session_store'
+    after 'deploy:update_code', 'bundler:bundle_new_release'
 
     desc <<-DESC
       |capistrano-recipes| Restarts your application. This depends heavily on what server you're running.
