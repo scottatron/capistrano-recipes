@@ -13,6 +13,12 @@ Capistrano::Configuration.instance.load do
       generate_config('config/config.yml', "#{shared_path}/config/config.yml")
     end
 
+    desc "|capistrano-recipes| Create Session_Store config"
+    task :session_store do
+      run_rake("config/initializers/session_store.rb")
+    end
+    after 'deploy:setup', 'deploy:session_store'
+
     desc <<-DESC
       |capistrano-recipes| Restarts your application. This depends heavily on what server you're running.
       If you are running Phusion Passenger, you can explicitly set the server type:

@@ -62,5 +62,5 @@ Capistrano::Configuration.instance.load do
   # a good choice as any.
   set(:pids_path) { File.join(shared_path, "pids") } unless exists?(:pids_path)
   
-  set :monitorer, 'bluepill' unless exists?(:monitorer)
+  #set :monitorer, 'bluepill' unless exists?(:monitorer)
 end
