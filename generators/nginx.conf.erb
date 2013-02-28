@@ -1,6 +1,6 @@
     <% if is_using('unicorn',:app_server) %>
     upstream <%= application %>_<%= rails_env %>_app_server {
-        server unix:<%= File.join(sockets_path,"#{app_server}","#{application}_#{rails_env}.sock") %> fail_timeout=0;
+        server unix:<%= File.join(sockets_path,"#{app_server}_#{application}_#{rails_env}.sock") %> fail_timeout=0;
     }
     <% end %>
 
@@ -21,8 +21,8 @@
 
         # path for static files
         root <%= deploy_to %>/current/public;
-        access_log /var/log/nginx/<%= application %>/<%= rails_env %>.access.log;
-        error_log  /var/log/nginx/<%= application %>/<%= rails_env %>.error.log info;
+        access_log <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.access.log" %>
+        error_log  <%= "#{shared_path}/log/#{application}_#{rails_env}_nginx.error.log info" %>
 
         # this rewrites all the requests to the maintenance.html
         # page if it exists in the doc root. This is for capistrano's
