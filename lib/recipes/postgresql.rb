@@ -1,18 +1,15 @@
-require 'active_support/secure_random'
-
 Capistrano::Configuration.instance.load do
   set_default(:postgresql_host, "localhost")
-  set_default(:postgresql_user) { "#{user}".downcase }
-  set_default(:postgresql_password) { ActiveSupport::SecureRandom.base64(16) }
+  set_default(:postgresql_user) { "#{application}_user".downcase }
+  set_default(:postgresql_password) { SecureRandom.base64(16) }
   set_default(:postgresql_database) { "#{application}_production".downcase }
 
-  set(:postgresql_database_template) { File.join(templates_path, "postgresql.yml.erb") } 
+  set(:postgresql_database_template) { File.join(templates_path, "postgresql.yml.erb") }
   set(:postgresql_database_config) { "#{shared_path}/config/database.yml" }
 
   namespace :postgresql do
     desc "Install the latest stable release of PostgreSQL."
     task :install, roles: :db, only: {primary: true} do
-      #run "#{sudo} add-apt-repository ppa:pitti/postgresql"
       run "#{sudo} apt-get -y update"
       run "#{sudo} apt-get -y install postgresql libpq-dev"
     end
@@ -26,8 +23,9 @@ Capistrano::Configuration.instance.load do
 
     desc "Create a database for this application."
     task :create_database, roles: :db, only: {primary: true} do
-      run %Q{#{sudo} -u postgres psql -c "create user #{postgresql_user} with password '#{postgresql_password}';"}
-      run %Q{#{sudo} -u postgres psql -c "create database #{postgresql_database} owner #{postgresql_user};"}
+      run %Q{#{sudo} -u postgres psql -c "DROP USER #{postgresql_user};"}
+      run %Q{#{sudo} -u postgres psql -c "CREATE USER #{postgresql_user} WITH PASSWORD '#{postgresql_password}';"}
+      run %Q{#{sudo} -u postgres psql -c "CREATE DATABASE #{postgresql_database} OWNER #{postgresql_user};"}
     end
     after "postgresql:setup", "postgresql:create_database"
 

@@ -5,7 +5,6 @@ source "http://rubygems.org"
 
 gem "capistrano",     ">= 2.5.9"
 gem "capistrano-ext", ">= 1.2.1"
-gem 'rvm-capistrano'
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
