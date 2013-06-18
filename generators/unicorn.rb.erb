@@ -30,7 +30,7 @@ before_fork do |server, worker|
   # as there's no need for the master process to hold a connection
   ActiveRecord::Base.connection.disconnect! if defined?(ActiveRecord::Base)
 
-  
+
   ##
   # When sent a USR2, Unicorn will suffix its pidfile with .oldbin and
   # immediately start loading up a new version of itself (loaded with a new
@@ -54,9 +54,6 @@ end
 
 after_fork do |server, worker|
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord::Base)
-
-  # Reset the memcache-based object/session store
-  Rails.cache.reset
 
   worker.user(username, group) if Process.euid == 0 && rails_env == 'production'
 end

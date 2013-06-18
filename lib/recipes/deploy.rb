@@ -6,8 +6,6 @@ Capistrano::Configuration.instance.load do
     task :seppuku, :roles => :app, :except => { :no_release => true } do
       run "rm -rf #{current_path}; rm -rf #{shared_path}"
     end
-    before 'deploy:setup','rvm:install_rvm'
-    before 'deploy:setup', 'rvm:install_ruby'
     desc "|capistrano-recipes| Uploads your local config.yml to the server"
     task :configure, :roles => :app, :except => { :no_release => true } do
       generate_config('config/config.yml', "#{shared_path}/config/config.yml")
@@ -17,9 +15,8 @@ Capistrano::Configuration.instance.load do
     task :session_store, :roles => :app, :except => { :no_release => true } do
       run_rake("config/initializers/session_store.rb")
     end
-    
+
     after 'deploy:setup', 'deploy:session_store'
-    after 'deploy:update_code', 'bundler:bundle_new_release'
 
     desc <<-DESC
       |capistrano-recipes| Restarts your application. This depends heavily on what server you're running.
