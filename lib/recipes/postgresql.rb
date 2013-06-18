@@ -17,13 +17,13 @@ Capistrano::Configuration.instance.load do
 
     desc "Create a database for this application."
     task :drop_database, roles: :db, only: {primary: true} do
-      run %Q{#{sudo} -u postgres psql -c "drop database #{postgresql_database};"}
-      run %Q{#{sudo} -u postgres psql -c "drop user #{postgresql_user};"}
+      run %Q{#{sudo} -u postgres psql -c "drop database IF EXISTS #{postgresql_database};"}
+      run %Q{#{sudo} -u postgres psql -c "drop user if exists #{postgresql_user};"}
     end
 
     desc "Create a database for this application."
     task :create_database, roles: :db, only: {primary: true} do
-      run %Q{#{sudo} -u postgres psql -c "DROP USER #{postgresql_user};"}
+      run %Q{#{sudo} -u postgres psql -c "DROP USER IF EXISTS #{postgresql_user};"}
       run %Q{#{sudo} -u postgres psql -c "CREATE USER #{postgresql_user} WITH PASSWORD '#{postgresql_password}';"}
       run %Q{#{sudo} -u postgres psql -c "CREATE DATABASE #{postgresql_database} OWNER #{postgresql_user};"}
     end
