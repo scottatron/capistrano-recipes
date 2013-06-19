@@ -16,47 +16,29 @@ Capistrano::Configuration.instance.load do
   # The wrapped bin to start unicorn
   # This is necessary if you're using rvm
   set :unicorn_bin, 'bundle exec unicorn' unless exists?(:unicorn_bin)
-  set :unicorn_socket, File.join(sockets_path,"#{app_server}_#{application}_#{rails_env}.sock") unless exists?(:unicorn_socket)
+  set :unicorn_socket, File.join(sockets_path,"unicorn_#{application}.sock") unless exists?(:unicorn_socket)
 
   # Defines where the unicorn pid will live.
   set(:unicorn_pid) { File.join(pids_path, "unicorn.pid") } unless exists?(:unicorn_pid)
 
-  # Our unicorn template to be parsed by erb
-  # You may need to generate this file the first time with the generator
-  # included in the gem
   set(:unicorn_local_config) { File.join(templates_path, "unicorn.rb.erb") }
 
-  # The remote location of unicorn's config file. Used by god to fire it up
   set(:unicorn_remote_config) { "#{shared_path}/config/unicorn.rb" }
 
-  def unicorn_start_cmd
-    "cd #{current_path} && #{unicorn_bin} -c #{unicorn_remote_config} -E #{rails_env} -D"
-  end
-
-  def unicorn_stop_cmd
-    "kill -QUIT `cat #{unicorn_pid}`"
-  end
-
-  def unicorn_restart_cmd
-    "kill -USR2 `cat #{unicorn_pid}`"
-  end
-
-  # Unicorn
-  #------------------------------------------------------------------------------
   namespace :unicorn do
     desc "|capistrano-recipes| Starts unicorn directly"
     task :start, :roles => :app do
-      run unicorn_start_cmd
+      run "#{sudo} service unicorn start"
     end
 
     desc "|capistrano-recipes| Stops unicorn directly"
     task :stop, :roles => :app do
-      run unicorn_stop_cmd
+      run "#{sudo} service unicorn stop"
     end
 
     desc "|capistrano-recipes| Restarts unicorn directly"
     task :restart, :roles => :app do
-      run unicorn_restart_cmd
+      run "#{sudo} service unicorn restart"
     end
 
     desc "|capistrano-recipes| Tail unicorn log file"
@@ -78,6 +60,7 @@ Capistrano::Configuration.instance.load do
       run "#{sudo} chmod +rw #{sockets_path}"
 
       generate_config(unicorn_local_config,unicorn_remote_config)
+      run "#{sudo} ln -s #{unicorn_remote_config} /etc/unicorn/unicorn_#{short_name}.rb"
     end
   end
 
