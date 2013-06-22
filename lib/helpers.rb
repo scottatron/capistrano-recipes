@@ -1,3 +1,5 @@
+require 'openssl'
+
 # =========================================================================
 # These are helper methods that will be available to your recipes.
 # =========================================================================
@@ -75,3 +77,18 @@ def run_rake(task)
   run "cd #{current_path} && bundle exec rake #{task} RAILS_ENV=#{environment}"
 end
 
+def ensure_dir_exists(dir)
+  run "mkdir -p #{dir}"
+end
+
+# =========================================================================
+# Generate a password using OpenSSL
+# =========================================================================
+def generate_password(length = 20)
+  String.new.tap do |pw|
+    while pw.length < length
+      pw << ::OpenSSL::Random.random_bytes(1).gsub(/\W/, '')
+    end
+    pw.force_encoding 'UTF-8'
+  end
+end
