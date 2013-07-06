@@ -48,9 +48,7 @@ def parse_config(file)
   require 'erb'  #render not available in Capistrano 2
   template  = File.read(file)          # read it
   returnval = ERB.new(template).result(binding)   # parse it
-  puts "------- TEMPLATE -----------" 
   puts returnval
-  puts "------- END TEMPLATE -------"
   return returnval
 end
 
@@ -64,13 +62,13 @@ end
 # Generates a configuration file parsing through ERB
 # Fetches local file and uploads it to remote_file
 # Make sure your user has the right permissions.
-def generate_config(local_file,remote_file,use_sudo=false)
+def generate_config(local_file, remote_file, use_sudo = false)
   temp_file = '/tmp/' + File.basename(local_file)
   buffer    = parse_config(local_file)
-  File.open(temp_file, 'w+') { |f| f << buffer }
+  File.open(temp_file, 'w+') { |f| f << buffer } unless dry_run
   upload temp_file, temp_file, :via => :scp
   run "#{use_sudo ? sudo : ""} mv #{temp_file} #{remote_file}"
-  `rm #{temp_file}`
+  `rm #{temp_file}` unless dry_run
 end
 
 # =========================================================================
