@@ -1,4 +1,6 @@
 Capistrano::Configuration.instance.load do
+  
+  set :github_style?,   true
 
   set(:latest_release)  { fetch(:current_path) }
   set(:release_path)    { fetch(:current_path) }
@@ -44,15 +46,6 @@ Capistrano::Configuration.instance.load do
       directories.
     DESC
     task :finalize_update, :except => { :no_release => true } do
-      # run "chmod -R g+w #{latest_release}" if fetch(:group_writable, true)
-
-      # mkdir -p is making sure that the directories are there for some SCM's that don't
-      # save empty folders
-      run <<-CMD
-        rm -rf #{latest_release}/log #{latest_release}/public/system &&
-        ln -s #{shared_path}/log #{latest_release}/log &&
-        ln -s #{shared_path}/system #{latest_release}/public/system
-      CMD
     end
   
     desc "[internal]"
