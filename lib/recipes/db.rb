@@ -2,10 +2,15 @@ require 'erb'
 
 Capistrano::Configuration.instance.load do
   namespace :db do
-    set_default :db_admin_user, 'root'
-    set_default :db_name, 'DATABASE'
-    set_default :db_user, 'USER'
-    set_default :db_pass, 'PASS'
+    
+    set_default :db_admin_user,   'root'
+    set_default :db_name,         'DATABASE'
+    set_default :db_user,         'USER'
+    set_default :db_pass,         'PASS'
+    
+    set_default (:db_file)        { "#{application}-dump.sql.bz2" }
+    set_default (:db_remote_file) { "#{shared_path}/backup/#{db_file}" }
+    set_default (:db_local_file)  { db_file }
     
     namespace :mysql do
       
@@ -14,7 +19,7 @@ Capistrano::Configuration.instance.load do
       end
 
       desc <<-EOF
-      |capistrano-recipes| Performs a compressed database dump. \
+      Performs a compressed database dump. \
       WARNING: This locks your tables for the duration of the mysqldump.
       Don't run it madly!
       EOF
@@ -26,7 +31,7 @@ Capistrano::Configuration.instance.load do
         end
       end
 
-      desc "|capistrano-recipes| Restores the database from the latest compressed dump"
+      desc "Restores the database from the latest compressed dump"
       task :restore, :roles => :db, :only => { :primary => true } do
         prepare_from_yaml
         run "bzcat #{db_remote_file} | mysql --user=#{db_user} -p --host=#{db_host} #{db_name}" do |ch, stream, out|
@@ -35,13 +40,13 @@ Capistrano::Configuration.instance.load do
         end
       end
 
-      desc "|capistrano-recipes| Downloads the compressed database dump to this machine"
+      desc "Downloads the compressed database dump to this machine"
       task :fetch_dump, :roles => :db, :only => { :primary => true } do
         prepare_from_yaml
         download db_remote_file, db_local_file, :via => :scp
       end
     
-      desc "|capistrano-recipes| Create MySQL database and user for this environment using prompted values"
+      desc "Creates MySQL database and user for this environment using prompted values"
       task :setup, :roles => :db, :only => { :primary => true } do
         cmd = "mysql -u#{db_admin_user} -p -e\"#{mysql_grant_sql}\""
         if dry_run
@@ -57,6 +62,7 @@ Capistrano::Configuration.instance.load do
         end
       end
       
+      desc "Drops MySQL database"
       task :destroy, :roles => :db, :only => { :primary => true } do
         prepare_from_yaml
         sql = "DROP DATABASE IF EXISTS #{db_name};"
@@ -68,11 +74,33 @@ Capistrano::Configuration.instance.load do
         end
       end
       
+      desc "Uploads the compressed database dump"
+      task :push_dump, :roles => :db, :only => { :primary => true } do
+        if dry_run
+
+        else
+          if blank?(:db_local_file)
+            logger.important "Local database dump filename not specified (:db_local_file)", 'DB::MySQL'
+            abort
+          end
+          if !File.exists?(db_local_file)
+            logger.important "Local database dump file was not found (#{db_local_file})", 'DB::MySQL'
+            abort
+          end
+          prepare_from_yaml
+          ensure_dir_exists "#{shared_path}/backup"
+          upload db_local_file, db_remote_file, :via => :scp
+        end
+      end
+      
+      desc "Upload local database dump and loads into remote database"
+      task :restore_from_local, :roles => :db, :only => { :primary => true } do
+        db.mysql.push_dump
+        db.mysql.restore
+      end
+      
       # Sets database variables from remote database.yaml
       def prepare_from_yaml
-        set(:db_file) { "#{application}-dump.sql.bz2" }
-        set(:db_remote_file) { "#{shared_path}/backup/#{db_file}" }
-        set(:db_local_file)  { db_file }
         set(:db_user) { db_config[rails_env]["username"] }
         set(:db_pass) { db_config[rails_env]["password"] }
         set(:db_host) { db_config[rails_env]["host"] }
@@ -90,7 +118,7 @@ Capistrano::Configuration.instance.load do
       end
     end
     
-    desc "|capistrano-recipes| Create database.yml in shared path with settings for current stage and test env"
+    desc "Create database.yml in shared path with settings for current stage and test env"
     task :create_yaml do      
       prepare_for_db_command
       
