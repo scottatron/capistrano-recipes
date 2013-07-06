@@ -78,7 +78,12 @@ def run_rake(task)
 end
 
 def ensure_dir_exists(dir)
-  run "mkdir -p #{dir}"
+  cmd = "mkdir -p #{dir}"
+  if dry_run
+    logger.debug "ensuring dir exists: #{cmd}"
+  else 
+    run cmd
+  end
 end
 
 # =========================================================================
