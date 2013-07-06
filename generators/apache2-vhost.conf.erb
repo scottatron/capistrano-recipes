@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+  
+  ServerName <%= canonical_hostname %>
+  <% if other_hostnames? %>
+  ServerAlias <%= other_hostnames.join(' ') %>
+  <% end %>
+  DocumentRoot <%= current_path %>
+
+  CustomLog "/var/log/apache2/<%= application %>.access.log" combined
+  ErrorLog "/var/log/apache2/<%= application %>.error.log"
+
+  SetEnv PHP_ENV <%= environment %>
+
+  <Directory "<%= current_path %>">
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+  <% if other_hostnames? %>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^<%= other_hostnames.join('|') %>$ [NC]
+  RewriteRule (.*) http://<%= canonical_hostname %>$1 [L,R=301]
+  <% end %>
+</VirtualHost>
