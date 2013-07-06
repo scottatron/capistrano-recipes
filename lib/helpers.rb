@@ -26,6 +26,10 @@ def is_using(something, with_some_var)
  exists?(with_some_var.to_sym) && fetch(with_some_var.to_sym).to_s.downcase == something
 end
 
+def blank?(variable)
+  !exists?(variable.to_sym) || fetch(variable.to_sym).empty?
+end
+
 # Path to where the generators live
 def templates_path
   expanded_path_for('../generators')
