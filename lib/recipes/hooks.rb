@@ -7,10 +7,12 @@ Capistrano::Configuration.instance.load do
       db.create_yaml
       db.mysql.setup
     end
+    bundle.install if bundler?
     symlinks.make if github_style?
   end
   
   after "deploy:finalize_update" do
+    bundle.install if bundler?
     symlinks.make unless github_style?
   end
 end

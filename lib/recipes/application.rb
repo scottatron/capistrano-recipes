@@ -1,6 +1,5 @@
-require "bundler/capistrano"
-
 Capistrano::Configuration.instance.load do
+  
   # User settings
   set :user, 'deploy'   unless exists?(:user)
   set :group,'www-data' unless exists?(:group)
@@ -31,4 +30,5 @@ Capistrano::Configuration.instance.load do
   set :bundle_flags, "--deployment --without=development test" unless exists?(:bundle_flags)
   set :sockets_path, "/var/run/unicorn" unless exists?(:sockets_path)
   set(:pids_path) { File.join(shared_path, "pids") } unless exists?(:pids_path)
+  
 end
