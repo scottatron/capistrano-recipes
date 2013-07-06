@@ -48,16 +48,11 @@ Capistrano::Configuration.instance.load do
     
       desc "Creates MySQL database and user for this environment using prompted values"
       task :setup, :roles => :db, :only => { :primary => true } do
-        cmd = "mysql -u#{db_admin_user} -p -e\"#{mysql_grant_sql}\""
-        if dry_run
-          logger.debug cmd
-        else
-          prepare_from_yaml
-          run cmd do |channel, stream, data|
-            if data =~ /^Enter password:/
-              pass = Capistrano::CLI.password_prompt "Enter database password for '#{db_admin_user}': "
-              channel.send_data "#{pass}\n" 
-            end
+        prepare_from_yaml unless dry_run
+        run "mysql -u#{db_admin_user} -p -e\"#{mysql_grant_sql}\"" do |channel, stream, data|
+          if data =~ /^Enter password:/
+            pass = Capistrano::CLI.password_prompt "Enter database password for '#{db_admin_user}': "
+            channel.send_data "#{pass}\n" 
           end
         end
       end
@@ -135,11 +130,8 @@ Capistrano::Configuration.instance.load do
       EOF
 
       ensure_dir_exists "#{shared_path}/config"
-      if dry_run
-        logger.debug "put #{shared_path}/config/database.yml"
-      else
-        put db_config.result, "#{shared_path}/config/database.yml"
-      end
+      puts db_config.result
+      put db_config.result, "#{shared_path}/config/database.yml"
     end
   end
     
@@ -154,17 +146,5 @@ Capistrano::Configuration.instance.load do
     Capistrano::CLI.ui.say "Populating the database..."
     run "cd #{current_path}; rake RAILS_ENV=#{variables[:rails_env]} db:seed"
   end
-  
-  after 'deploy:setup' do
-    db.create_yaml if Capistrano::CLI.ui.agree("\n--- Create database.yml? [Yn] ")
-  end if is_using('mysql', :database)
-  
-  after 'db:create_yaml' do
-    db.mysql.setup if Capistrano::CLI.ui.agree("\n--- Create mysql database and grant privileges? [Yn] ")
-  end if is_using 'mysql', :database
-
-  before "symlinks:make" do
-    run "rm -f #{release_path}/config/database.yml"
-  end if is_using('mysql', :database)
   
 end
