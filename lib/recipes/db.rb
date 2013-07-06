@@ -116,22 +116,8 @@ Capistrano::Configuration.instance.load do
     desc "Create database.yml in shared path with settings for current stage and test env"
     task :create_yaml do      
       prepare_for_db_command
-      
-      db_config = ERB.new <<-EOF
-      base: &base
-        adapter: mysql2
-        encoding: utf8
-        username: #{db_user}
-        password: #{db_pass}
-
-      #{environment}:
-        database: #{db_name}
-        <<: *base
-      EOF
-
       ensure_dir_exists "#{shared_path}/config"
-      puts db_config.result
-      put db_config.result, "#{shared_path}/config/database.yml"
+      generate_config "#{templates_path}/database.yml.erb", "#{shared_path}/config/database.yml"
     end
   end
     
